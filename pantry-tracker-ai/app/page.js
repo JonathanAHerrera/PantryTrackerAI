@@ -1,7 +1,7 @@
 "use client";
 import { firestore } from '@/firebase';
 import {Box, Stack, Typography, Button, Modal, TextField} from '@mui/material'
-import { collection, getDocs, query, doc, setDoc } from 'firebase/firestore';
+import { collection, getDocs, query, doc, setDoc, deleteDoc } from 'firebase/firestore';
 import { useEffect, useState } from 'react';
 
 const style = {
@@ -45,8 +45,16 @@ export default function Home() {
   const addItem = async (itemName) => {
     const docRef = doc(collection(firestore, 'pantry'), itemName)
     await setDoc(docRef, {})
-    updatePantry()
+    await updatePantry()
   }
+
+  const deleteItem = async (itemName) => {
+    const docRef = doc(collection(firestore, 'pantry'), itemName)
+    await deleteDoc(docRef)
+    await updatePantry()
+  }
+
+
   return (
     <Box
       width="100vw"
@@ -88,6 +96,7 @@ export default function Home() {
         </Box>
         <Stack width='800px' height='300px' spacing={2} overflow={'auto'}>
           {pantry.map((i) => (
+
             <Box
               key={i}
               width="100%"
@@ -96,17 +105,22 @@ export default function Home() {
               justifyContent={'center'}
               alignItems={'center'}
               bgcolor={'#f0f0f0'}
+              padding={'60px'}
             >
               <Typography
                 variant='h3'
                 color={'#333'}
                 textAlign={'center'}
+                flexGrow={1}
               >
                 {
                   // Capitalize the first letter of item
                   i.charAt(0).toUpperCase() + i.slice(1)
                 }
               </Typography>
+              <Button variant='contained' onClick={() =>{
+                deleteItem(i)
+              }} >Delete</Button>
             </Box>
           ))}
         </Stack>       
